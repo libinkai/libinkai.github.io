@@ -2,4 +2,4 @@
 
 - [闭包](./闭包/闭包.md)
 
-- [lambda中的变量](./lambda中的变量/lambda中的变量.md)
+- [由lambda中的变量想到的那些事.md](./由lambda中的变量想到的那些事/由lambda中的变量想到的那些事.md)
