@@ -9,4 +9,5 @@
 # 关于我
 
 - 喜欢种花的程序猿
-- [博客地址](https://www.equator8848.xyz/)
+- [原博客地址](https://www.cnblogs.com/Libinkai/)
+- [本博客地址](https://www.equator8848.xyz/)
