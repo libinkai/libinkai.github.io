@@ -1,8 +1,10 @@
 # 由lambda中的变量想到的那些事
 
+> 主要内容是Java中lambda的实现原理，为什么在lambda中使用的外部变量需要是“final”语义的，以及`invokedynamic`指令的简单介绍
+
 - Java中lambda的引入简化了编程，减少了代码量，更是流式编程必不可少的语法
 
-- 但是lambda也有一些限制，例如有时候当我们试图在lambda表达式中修改一个外部变量的时，将得到`variable used in lambda expression should be final or effectively final`这个错误，这是为什么呢？IDEA会智能提示我们使用数组或者原子类可以避免这个错误，这又是为什么呢？以前我都是直接按照IDEA的智能提示修改了，没有细究，也不是不能用。之前看了一些博客之类的不是很懂，有的说法我也不太认同，所以今天我来探索一下。
+- 但是lambda也有一些限制，例如有时候当我们试图在lambda表达式中修改一个外部变量的时，将得到`variable used in lambda expression should be final or effectively final`这个错误，这是为什么呢？IDEA会智能提示我们使用数组或者原子类可以避免这个错误，这又是为什么呢？以前我都是直接按照IDEA的智能提示修改了，没有细究，也不是不能用。我之前也在网上简单地搜索了一下相关的资料，但是没太看懂，所以今天再来探索一下。
 
   ![img1](./img1.jpg)
 
@@ -177,7 +179,7 @@ final class VariableUseIntTest$$Lambda$1 implements Consumer {
 
 # 解决方法
 
-> 下面的2、3、4几个方法其实都是同一个原理：对象实例在堆上分配。
+> 下面的2、3、4几个方法其实都是同一个原理：对象实例在堆上分配，我们通过变量去修改实例的内容而不是修改变量本身。
 
 - 使用静态变量：静态变量保存在方法区（JDK8以及之后，类变量随着Class对象一起存放在堆中），也是线程共享的内存区域
 
@@ -330,26 +332,32 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
     return mf.buildCallSite();
 }
 /** 
-MethodHandle：方法句柄，类似于函数指针或者委托的函数别名
+MethodHandle：方法句柄，类似于函数指针或者委托的函数别名（在C语言中我们可以使用函数指针来进行方法的调用，因为本质上方法的入口也是一个内存地址）
 MethodType：代表方法类型（返回值以及具体参数）
-CallSite：调用点，保存了一个MethodType实例的引用。引导方法的返回值类型为CallSite，代表了真正要执行的目标方法调用。
+CallSite：调用点，保存了一个MethodHandle实例的引用。引导方法的返回值类型为CallSite，代表了真正要执行的目标方法调用。
 
 metafactory 方法参数简单介绍：
 MethodHandles.Lookup caller, 引导方法的调用者
 String invokedName, 返回的CallSite关联的MethodHandle对应的方法名
-MethodType invokedType, 返回的CallSite关联的MethodHandle的方法描述符（以上三个参数由JVM自动填充）
+MethodType invokedType, 返回的CallSite关联的MethodHandle的方法描述符，参数是捕获的那些变量，返回值是实现的那个函数式接口（以上三个参数由JVM自动填充）
 MethodType samMethodType, 需要实现的lamada方法的MethodType
 MethodHandle implMethod, 调用lamada方法具体实现方法的MethodHandle，就是自动生成的那些私有方法的句柄
-MethodType instantiatedMethodType，调用lamada方法的MethodType
+MethodType instantiatedMethodType，调用lamada方法的MethodType，有可能与samMethodType相等，也有可能是samMethodType的一个特殊形式
 **/
 ```
 
 ![img2](./img2.jpg)
 
-- 再次总结：编译器会把我们写的lambda逻辑放到自动生成的私有方法`lambda$xxx$n`里面，并且在使用到lambda的地方会产生`invokedynamic`指令，该指令会调用引导方法（此时生成内部类），返回一个CallSite。根据常量池的信息，JVM便可以最终调用到要执行的目标方法（找到自动生成的内部类实现的方法来调用，该方法会调用lambda表达式所在的私有方法）。
+- `invokedynamic`的执行流程
+  - 通过`invokedynamic`的操作数可以知道调用点的信息（就是常量池的一些数据）
+  - JVM调用引导方法会得到一个`CallSite`，这种关联会被缓存下来，是永久性的
+  - 通过`CallSite`即可调用目标方法
+
+- 总结：编译器会把我们写的lambda逻辑放到自动生成的私有方法`lambda$xxx$n`里面，并且在使用到lambda的地方会产生`invokedynamic`指令，该指令会调用引导方法（此时生成内部类），返回一个`CallSite`。根据常量池的信息，JVM便可以最终调用到要执行的目标方法（找到自动生成的内部类实现的方法来调用，该方法会调用lambda表达式所在的私有方法）。
 
 # 参考资料
 
 - 《深入理解Java虚拟机》第三版
 - [Hotspot invokedynamic指令和Lamada实现原理详解](https://blog.csdn.net/qq_31865983/article/details/102847226)
+- [InvokeDynamic指令](https://blog.csdn.net/zxhoo/article/details/38387141)
 - [Java 8 Lambda实现原理分析](https://www.cnblogs.com/wj5888/p/4667086.html)
