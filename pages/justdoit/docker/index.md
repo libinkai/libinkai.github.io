@@ -193,6 +193,68 @@ docker run xxx -l #正常，ls -a被追加为ls -a -l
 
 # Docker网络
 
+## 基础概念
+
+- 安装了docker之后，会有一个网卡docker0。其以桥接模式连接到宿主机，利用了`veth-pair`技术
+- `veth-pair`就是一对虚拟设备接口，一端连着协议，一端彼此连接（星型网络）
+- 每启动一个容器，docker会为其分配一个IP
+- docker中所有的网络接口都是虚拟的，效率高
+
+## 容器互联
+
+- `--link`参数，应用场景使用容器名称代替IP（DNS）
+- `docker run -d -P --name tomcat02 --link tomcat01 tomcat`，单向连接
+- 在`/etc/hosts`配置文件中进行了配置
+- 不推荐使用
+
+# 自定义网络
+
+## 网络模式
+
+- none，不配置网络
+
+- bridge，桥接模式
+- host，与宿主机共享网络
+- container：容器网络互通（用的少，局限性大）
+
+## 基本命令
+
+- `docker network ls`，查看所有docker网络
+- `docker network inspect mynet`，查看网络详情
+- 指定网络模式，`docker run -d -P --name tomcat_test --net bridge tomcat`，默认为桥接模式
+- 创建网络，`docker network create --driver bridge --subnet 192.168.0.0/16 --gateway 192.168.0.1(eth0的IP) mynet`
+
+## 不同网络连通
+
+- `docker network connect [options] NETWORK CONTAINER`
+- 通过`inspect`指令可以看到网络下的容器；相当于一个容器两个IP地址
+
 # Docker Compose
 
 # Docker Swarm
+
+# 实战-springboot项目发布
+
+## 基本步骤
+
+1. 构建springboot项目
+
+2. 打包应用，`maven package`，打包
+
+3. 编写dockerfile
+
+   ```
+   FROM java:8
+   
+   COPY *.jar /app.jar
+   
+   CMD ["--server.port=8080"]
+   
+   EXPOSE 8080
+   
+   ENTRYPONIT ["java","-jar","/app.jar"]
+   ```
+
+4. 构建镜像
+5. 发布运行
+
