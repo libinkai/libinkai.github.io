@@ -32,6 +32,18 @@
   docker run hello-world
   ```
 
+- 系统服务配置
+
+  ```
+  # 设置服务为系统服务
+  systemctl enable docker.service
+  
+  # 容器配置
+  docker run --restart=always
+  # 已启动容器配置
+  docker update --restart=always <CONTAINER ID>
+  ```
+
 ## 配置加速
 
 > https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
