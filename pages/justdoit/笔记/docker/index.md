@@ -243,7 +243,106 @@ docker run xxx -l #正常，ls -a被追加为ls -a -l
 
 # Docker Compose
 
+> docker 官方容器编排工具
+
+## 基本概念
+
+- 使用`yaml`文件配置、运行多个容器
+
+- 基本步骤
+
+  - 编写`dockerFile`
+  - 编写`docker-compose.yml`配置文件
+
+  ```yaml
+  version: "3.9"  # optional since v1.27.0
+  services:
+    web:
+      build: . // 构建本地镜像，需要dockerfile
+      ports:
+        - "5000:5000"
+      volumes:
+        - .:/code
+        - logvolume01:/var/log
+      links:
+        - redis
+    redis:
+      image: redis // 拉取
+  volumes:
+    logvolume01: {}
+  ```
+
+  - `docker-compose up`启动项目
+
+- 基本角色
+  - service，服务，容器，应用
+  - project，项目，一组相关的service
+
+## 配置文件语法
+
+```
+version: // 版本
+services:
+	service1:
+		image: // docker命令
+		build:
+		ports:
+		depends_on: other_service // 依赖，启动顺序
+	service2:
+[other_config]:
+```
+
+- `compose up --build`，重新构建
+
 # Docker Swarm
+
+> 集群部署，简化版K8S
+
+## 集群搭建
+
+- 概念
+  - Node
+    - 管理节点，`docker node ls`，查看节点信息
+    - 工作节点
+  - 
+
+- 基本命令
+
+  - `docker swarm --help`
+  - 初始化节点，`docker swarm init --advertised address $IP`
+  - 获取token
+    - `docker swarm join-token manager`
+    - `docker swarm join-token worker`
+
+  - 加入集群
+    - `docker swarm join --token $TOKEN`，加入节点
+    - `docker swarm join --token $TOKEN`
+
+## Raft一致性协议
+
+- 保证大多数节点可用
+- 三个主节点，必须大于1台节点可用
+
+## 弹性部署
+
+- `docker service`
+- 集群环境下，容器转换为服务，引入副本的概念
+
+## 基本命令
+
+- `docker service create `服务启动，VS`docker run`容器启动。
+- `docker service ps`
+- `docker service update --replicas $NUMBER $SERVICE_NAME`，或者 `docker service scale $SERVICE_NAME=NUMBER` 弹性扩缩容
+
+## 拓展概念
+
+# Docker Stack
+
+> compose为单机部署，stack为集群部署
+
+# Docker Secret
+
+# Docker Config
 
 # 实战-springboot项目发布
 
