@@ -1,6 +1,7 @@
 # 发展历史
 
 - DistBelief -开源-> TensorFlow
+- [TensorFlow初印象](1-TensorFlow初印象.pdf)
 
 # 安装配置
 
@@ -8,7 +9,11 @@
 pip install tensorflow==1.12 -i https://pypi.douban.com/simple/
 ```
 
+- [TensorFlow初接触](2-TensorFlow初接触.pdf)
+
 # TensorFlow知识
+
+- [TensorFlow基础概念解析](3-TensorFlow基础概念解析.pdf)
 
 ## 模块与架构
 
@@ -90,6 +95,8 @@ J(f)为模型的复杂度，是定义在假设空间上的泛函。模型f越复
 
 # 实战——房价预测
 
+- [实战TensorFlow房价预测](4-实战TensorFlow房价预测.pdf)
+
 ![image-20210303210414299](image-20210303210414299.png)
 
 ![image-20210303211055207](image-20210303211055207.png)
@@ -156,9 +163,57 @@ J(f)为模型的复杂度，是定义在假设空间上的泛函。模型f越复
 
 # 实战——手写数字识别
 
+- [实战TensorFlow手写体数字识别](5-实战TensorFlow手写体数字识别.pdf)
+
+![image-20210306110253007](image-20210306110253007.png)
+
+![image-20210306110336159](image-20210306110336159.png)
+
+## BP算法
+
+![image-20210306110646907](image-20210306110646907.png)
+
+![image-20210306111201140](image-20210306111201140.png)
+
+![image-20210306111237480](image-20210306111237480.png)
+
+## SoftMax
+
+![image-20210306111438296](image-20210306111438296.png)
+
+![image-20210306185148956](image-20210306185148956.png)
+
+![image-20210306190427357](image-20210306190427357.png)
+
+- one-hot编码适合于数据量小的，相互独立的数据编码
+
+## CNN
+
+![image-20210306195223003](image-20210306195223003.png)
+
+![image-20210306195307117](image-20210306195307117.png)
+
+- 卷积核需要训练，卷积的结果称为featuremap
+
+![image-20210306195756049](image-20210306195756049.png)
+
+![image-20210306195933323](image-20210306195933323.png)
+
+- dropout使得模型更加简单避免过拟合，可以认为是多个子图的组合
+
+![image-20210306200118820](image-20210306200118820.png)
+
 # 实战——验证码识别
 
+- [实战TensorFlow验证码识别](6-实战TensorFlow验证码识别.pdf)
+
 # 实战——人脸识别
+
+- [实战TensorFlow验证码识别](6-实战TensorFlow验证码识别.pdf)
+
+# 其它
+
+- [TensorFlow社区参与指南.pdf](8-TensorFlow社区参与指南.pdf)
 
 # 依赖
 
